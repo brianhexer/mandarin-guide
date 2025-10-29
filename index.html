@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandarin Guide</title>
+
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png"> <!-- Added for iOS -->
+    <meta name="theme-color" content="#ffffff"/> <!-- Added theme color -->
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* REMOVED: --sidebar-width: 280px; */
+            --header-height: 64px;
+            /* Modern Color Palette */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc; /* slate-50 */
+            /* REMOVED: --bg-sidebar: #f8fafc; */
+            --text-primary: #1e293b; /* slate-800 */
+            --text-secondary: #64748b; /* slate-500 */
+            --text-heading: #0f172a; /* slate-900 */
+            --border-color: #e2e8f0; /* slate-200 */
+            --accent-color: #3b82f6; /* blue-500 */
+            --accent-text-color: #2563eb; /* blue-600 */
+            --hover-bg-color: #f1f5f9; /* slate-100 */
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+            --completed-color: #16a34a; /* green-600 */
+            --completed-bg: #f0fdf4; /* green-50 */
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* --- Modernized Styles --- */
+
+        /* REMOVED: All .sidebar, .sidebar a, .sidebar-heading styles */
+
+        .card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        .card-title {
+            color: var(--text-heading);
+        }
+        .text-muted {
+            color: var(--text-secondary);
+        }
+
+        .header {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .accent-text {
+            color: var(--accent-text-color);
+        }
+
+        .listen-btn {
+            background-color: var(--hover-bg-color);
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 6px;
+            transition: background-color 0.2s, color 0.2s, transform 0.1s;
+        }
+        .listen-btn:hover {
+            background-color: #eff6ff; /* blue-50 */
+            color: #2563eb; /* blue-600 */
+        }
+         .listen-btn:active {
+             transform: scale(0.95);
+             background-color: #f0fdf4; /* green-50 */
+             color: #16a34a; /* green-600 */
+         }
+
+        .pinyin {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--hover-bg-color);
+            color: #475569; /* slate-600 */
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            border: 1px solid var(--border-color);
+        }
+        .hanzi {
+            font-size: 1.15em;
+            font-weight: 500;
+            overflow-wrap: break-word; /* NEW: Allow long Chinese text to wrap */
+            word-break: break-word; /* Fallback for overflow-wrap */
+        }
+
+        .callout {
+            background-color: #f0f9ff; /* sky-50 */
+            border-left: 4px solid var(--accent-color);
+            color: #0c4a6e; /* sky-800 */
+            border-radius: 6px;
+        }
+        .callout .pinyin {
+            background-color: #e0f2fe; /* sky-100 */
+            color: #075985; /* sky-900 */
+            border-color: #bae6fd; /* sky-200 */
+        }
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .table th {
+            background-color: var(--bg-secondary);
+            color: var(--text-heading);
+            font-weight: 600;
+        }
+        .table td, .table th {
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 16px;
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .table tbody tr:hover {
+            background-color: var(--hover-bg-color);
+        }
+
+        /* REMOVED: .menu-btn styles */
+        /* REMOVED: #sidebar-overlay styles */
+        /* REMOVED: #sidebar-container styles */
+        
+        /* Main content padding */
+        .main-content {
+            padding-top: var(--header-height);
+            /* REMOVED: padding-left */
+        }
+
+        /* REMOVED: Desktop layout media query for sidebar */
+
+        /* --- NEW STYLES FOR PAGINATION & PROGRESS --- */
+        .content-page {
+            display: none;
+        }
+        .content-page.active {
+            display: block;
+        }
+
+        /* REMOVED: Progress Icons in Sidebar */
+        
+        /* Page Navigation Buttons */
+        .page-footer-nav {
+            display: flex;
+            flex-direction: column; /* MOBILE-FIRST: Stack button groups */
+            gap: 1rem; /* Space between button groups */
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .page-footer-nav > div { /* Target the immediate children divs */
+            display: grid; /* Make buttons stack */
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) { /* sm breakpoint */
+            .page-footer-nav {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .page-footer-nav > div {
+                display: flex; /* Go back to flex */
+                flex-direction: row;
+                grid-template-columns: none; /* Reset grid */
+            }
+        }
+
+        .mark-complete-btn, .next-page-btn, .prev-page-btn, .home-page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mark-complete-btn:hover, .next-page-btn:hover, .prev-page-btn:hover {
+            background-color: var(--hover-bg-color);
+            border-color: #cbd5e1; /* slate-300 */
+        }
+        .mark-complete-btn.is-completed {
+            background-color: var(--completed-bg);
+            border-color: #bbf7d0; /* green-200 */
+            color: var(--completed-color);
+        }
+        .next-page-btn {
+            background-color: #16a34a; /* green-600 */
+            border-color: #16a34a; /* green-600 */
+            color: white;
+        }
+        .next-page-btn:hover {
+            background-color: #15803d; /* green-700 */
+            border-color: #15803d; /* green-700 */
+            color: white;
+        }
+        .prev-page-btn {
+            border-color: #dc2626; /* red-600 */
+            color: #dc2626; /* red-600 */
+        }
+        .prev-page-btn:hover {
+            background-color: #fef2f2; /* red-50 */
+            border-color: #b91c1c; /* red-700 */
+            color: #b91c1c; /* red-700 */
+        }
+        .home-page-btn {
+            border-color: #3b82f6; /* blue-500 */
+            color: #3b82f6; /* blue-500 */
+        }
+        .home-page-btn:hover {
+            background-color: #eff6ff; /* blue-50 */
+            border-color: #2563eb; /* blue-600 */
+            color: #2563eb; /* blue-600 */
+        }
+
+        /* MODAL STYLES (Unchanged) */
+        #next-lesson-modal {
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        }
+        #next-lesson-modal[aria-hidden="true"] {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #next-lesson-modal[aria-hidden="false"] {
+            opacity: 1;
+            visibility: visible;
+        }
+        #next-lesson-modal[aria-hidden="false"] #modal-overlay {
+            opacity: 1;
+        }
+        #next-lesson-modal[aria-hidden="false"] > div:last-child {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        #modal-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #next-lesson-modal > div:last-child {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        /* --- NEW: Home Page Navigation Styles --- */
+        .nav-dropdown summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            padding: 0.75rem 1.25rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+        .nav-dropdown summary:hover {
+            background-color: #eff6ff; /* blue-50 */
+            border-color: #bfdbfe; /* blue-200 */
+            color: var(--accent-text-color); /* blue-600 */
+        }
+        .nav-dropdown summary::after { /* Dropdown arrow */
+            content: '▼';
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+        }
+        .nav-dropdown[open] summary::after {
+            transform: rotate(180deg);
+        }
+        .nav-dropdown-content {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            margin-top: -8px; /* Pull up to meet summary */
+            background-color: var(--bg-primary);
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #eff6ff; /* blue-50 */
+            color: var(--accent-text-color); /* blue-600 */
+        }
+        .nav-link.is-viewing { 
+            background-color: #e0f2fe; /* sky-100 */
+            color: var(--accent-text-color);
+            font-weight: 500;
+        }
+        .nav-link.is-completed {
+            color: #3f6212; /* lime-800 */
+        }
+        .nav-link.is-viewing.is-completed {
+            background-color: #dcfce7; /* green-100 */
+            color: #15803d; /* green-700 */
+        }
+
+        /* Progress Icons for new nav */
+        .nav-link .progress-icons {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+        .nav-link .icon-eye,
+        .nav-link .icon-tick {
+            display: none;
+            width: 16px;
+            height: 16px;
+        }
+        .nav-link.is-viewing .icon-eye {
+            display: inline-block;
+            color: var(--accent-color);
+        }
+        .nav-link.is-completed .icon-tick {
+            display: inline-block;
+            color: var(--completed-color);
+        }
+        .nav-link.is-viewing.is-completed .icon-eye {
+            display: none;
+        }
+
+        /* --- NEW: Welcome Animations --- */
+        .typewriter {
+            display: inline-block;
+            overflow: hidden; /* Ensures the text is not visible until typed */
+            white-space: nowrap; /* Keeps the text on a single line */
+            /* REMOVED: border-right: .1em solid var(--accent-color); */
+            letter-spacing: .05em; /* A bit tighter */
+            animation: 
+                typing 4s steps(17, end) infinite; /* MODIFIED: Removed blink-caret animation */
+            max-width: 100%; /* Ensure it doesn't overflow */
+        }
+
+        /* The typing effect */
+        @keyframes typing {
+          0%   { width: 0 }
+          40%  { width: 100% } /* Type and hold */
+          90%  { width: 100% } /* Hold longer */
+          100% { width: 0 }    /* Reset for loop */
+        }
+
+        /* REMOVED: @keyframes blink-caret */
+
+        /* --- ADDED BACK: Wave Animation --- */
+        .wave {
+            display: inline-block;
+            animation: wave-animation 2.5s infinite;
+            transform-origin: 70% 70%;
+        }
+
+        @keyframes wave-animation {
+           0% { transform: rotate( 0.0deg) }
+           10% { transform: rotate(14.0deg) }
+           20% { transform: rotate(-8.0deg) }
+           30% { transform: rotate(14.0deg) }
+           40% { transform: rotate(-4.0deg) }
+           50% { transform: rotate(10.0deg) }
+           60% { transform: rotate( 0.0deg) }  /* pause */
+          100% { transform: rotate( 0.0deg) }
+        }
+
+        /* --- NEW: Typewriter Button Animation --- */
+        .typewriter-button {
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: bottom; /* Aligns animated text with the icon */
+            animation: typing-button 3s steps(6, end) infinite;
+        }
+
+        @keyframes typing-button {
+            0%   { width: 0 }
+            40%  { width: 100% } /* Type */
+            80%  { width: 100% } /* Hold */
+            100% { width: 0 }    /* Erase */
+        }
+
+        /* --- NEW: Search Modal Styles --- */
+        #search-modal {
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        }
+        #search-modal[aria-hidden="true"] {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #search-modal[aria-hidden="false"] {
+            opacity: 1;
+            visibility: visible;
+        }
+        #search-modal[aria-hidden="false"] #search-modal-overlay {
+            opacity: 1;
+        }
+        #search-modal[aria-hidden="false"] > div:last-child {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        #search-modal-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #search-modal > div:last-child {
+            opacity: 0;
+            transform: translateY(-20px); /* Animate from top */
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .search-result-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        .search-result-item:hover {
+            background-color: var(--hover-bg-color);
+        }
+        .search-result-item h4 {
+            color: var(--accent-text-color);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .search-result-item p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            /* Truncate snippet */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- REMOVED: OVERLAY FOR MOBILE SIDEBAR -->
+
+    <!-- HEADER -->
+    <header class="header fixed top-0 left-0 right-0 z-40 h-[var(--header-height)] flex items-center px-4 md:px-6">
+        <!-- REMOVED: Mobile Menu Button -->
+        
+        <!-- App Title & Logo Wrapper -->
+        <div class="flex items-center gap-2">
+            <img src="icon-192.png" alt="Mandarin Guide Logo" class="w-8 h-8">
+            <h1 class="text-xl font-semibold accent-text">Mandarin Guide</h1>
+        </div>
+        
+        <!-- Social Links Container -->
+        <div class="ml-auto flex items-center space-x-2"> <!-- Always visible -->
+            
+            <!-- REMOVED: Search Icon Button -->
+            
+            <span class="text-sm text-slate-600 hidden sm:inline">Connect with Admin &gt;&gt;&gt;</span>
+            
+            <!-- Profile Pic Placeholder -->
+            <div class="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
+                 <img class="w-full h-full object-cover" 
+                      src="./images/profile.jpg" 
+                      alt="Brian's profile picture"
+                      onerror="this.parentElement.innerHTML = `<svg class='w-6 h-6 text-slate-400' fill='currentColor' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z' clip-rule='evenodd'></path></svg>`">
+            </div>
+
+            <!-- Instagram Button -->
+            <a href="https://www.instagram.com/brian_offl/" target="_blank" rel="noopener noreferrer" class="insta-btn group flex items-center border border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white text-sm font-medium py-2 px-3 rounded-lg transition-all hover:scale-105 transform"> <!-- MODIFIED: Added group, px-3, transition-all, hover:scale-105, transform -->
+                <svg class="w-4 h-4 transition-transform group-hover:scale-[0.9523]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <!-- MODIFIED: Added transition-transform, group-hover:scale -->
+                    <rect x="2" y="2" width="20" height="20" rx="5.657" ry="5.657"></rect>
+                    <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
+                </svg>
+                <span class="inline-block ml-2 typewriter-button">Insta</span> <!-- MODIFIED: Removed hidden/sm classes -->
+            </a>
+            <!-- GitHub Button -->
+            <a href="https://github.com/brianhexer" target="_blank" rel="noopener noreferrer" class="group flex items-center border border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white text-sm font-medium py-2 px-3 rounded-lg transition-all hover:scale-105 transform"> <!-- MODIFIED: Added group, px-3, transition-all, hover:scale-105, transform -->
+                <svg class="w-4 h-4 transition-transform group-hover:scale-[0.9523]" fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"> <!-- MODIFIED: Added transition-transform, group-hover:scale -->
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                </svg>
+                <span class="inline-block ml-2 typewriter-button">GitHub</span> <!-- MODIFIED: Removed hidden/sm classes -->
+            </a>
+
+            <!-- NEW: Search Icon Button (MOVED HERE) -->
+            <button type="button" aria-label="Search" id="search-icon-btn" class="p-2 rounded-full text-slate-500 border border-slate-300 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"> <!-- MODIFIED: Changed border-transparent to border-slate-300 -->
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </button>
+            <!-- END NEW -->
+        </div>
+    </header>
+
+    <!-- REMOVED: SIDEBAR -->
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content"> <!-- No padding-left anymore -->
+        <div class="p-6 md:p-10">
+            <div class="max-w-4xl mx-auto"> <!-- This centers the content -->
+                
+                <!-- Welcome Section -->
+                <article class="content-page card" data-page-id="home">
+                    <div class="p-6 md:p-10 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2 text-slate-900 flex items-center min-h-[3rem]"> <!-- Added min-height for layout stability -->
+                            <span class="typewriter">Welcome Buddy! <span class="wave">👋</span></span> <!-- MODIFIED: Wrapped emoji in .wave span -->
+                        </h1>
+                        <p class="text-lg text-slate-600">Your personal Mandarin learning journey starts here. Use the navigation below to explore lessons, or click to begin with Lesson 1.</p>
+                    </div>
+                    <div class="p-6 md:p-10">
+                        <h2 class="text-2xl font-semibold mb-4">How this works</h2>
+                        <p class="mb-4 text-muted">This guide is broken down into 4 levels. Each lesson is its own page.</p>
+                        <ul class="list-disc list-inside space-y-2 text-muted">
+                            <li>Use the dropdowns below to find and jump to any lesson.</li>
+                            <li>Use the "Mark as Completed" button at the bottom of each page to track your progress.</li>
+                            <li>Your progress is saved, so you can pick up right where you left off.</li>
+                        </ul>
+                        
+                        <!-- NEW: Home Page Install Button -->
+                        <button id="home-install-btn" class="hidden mt-6 w-full sm:w-auto flex items-center justify-center next-page-btn">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span>Install App for Offline Use</span>
+                        </button>
+                        
+                        <!-- NEW: Progress Bar (Moved from Sidebar) -->
+                        <div class="mt-8 pt-4 border-t border-slate-200">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Course Progress</span>
+                            <div id="progress-bar-container" class="w-full bg-slate-200 rounded-full h-2.5 my-2 overflow-hidden">
+                                <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <span id="progress-text" class="text-sm text-slate-600">0 / 33 Completed</span>
+                        </div>
+
+                        <!-- NEW: Home Page Navigation -->
+                        <div class="mt-6 space-y-3">
+                            <h2 class="text-xl font-semibold mb-2">Course Navigation</h2>
+                            
+                            <!-- Level 1 -->
+                            <details class="nav-dropdown group">
+                                <summary>Level 1: The Basics</summary>
+                                <div class="nav-dropdown-content">
+                                    <a href="#" data-page-id="lesson1" class="nav-link"><span>Lesson 1: The Tones (聲調)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson2" class="nav-link"><span>Lesson 2: Basic Greetings (問候)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson3" class="nav-link"><span>Lesson 3: Common Courtesies (禮貌)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson4" class="nav-link"><span>Lesson 4: Numbers 0-10,000 (數字)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson5" class="nav-link"><span>Lesson 5: Introductions (介紹)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson6" class="nav-link"><span>Lesson 6: Yes, No & 'Bu' (是, 不)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson7" class="nav-link"><span>Lesson 7: Question Words (5W1H) (疑問詞)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson8" class="nav-link"><span>Lesson 8: Buying Things (買東西)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                </div>
+                            </details>
+
+                            <!-- Level 2 -->
+                            <details class="nav-dropdown group">
+                                <summary>Level 2: Core Grammar</summary>
+                                <div class="nav-dropdown-content">
+                                    <a href="#" data-page-id="lesson9" class="nav-link"><span>Lesson 9: Using 'le' (了)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson10" class="nav-link"><span>Lesson 10: Using 'guo' (過)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson11" class="nav-link"><span>Lesson 11: Using 'zai' (在)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson12" class="nav-link"><span>Lesson 12: Dates & Time</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson13" class="nav-link"><span>Lesson 13: Measure Words (量詞)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson14" class="nav-link"><span>Lesson 14: 'De' Particles (的, 地, 得)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson15" class="nav-link"><span>Lesson 15: Comparisons (比, 跟)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson16" class="nav-link"><span>Lesson 16: 'Ba' Sentence (把)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                </div>
+                            </details>
+
+                            <!-- Level 3 -->
+                            <details class="nav-dropdown group">
+                                <summary>Level 3: Adv. & Pro</summary>
+                                <div class="nav-dropdown-content">
+                                    <a href="#" data-page-id="lesson17" class="nav-link"><span>Lesson 17: Result Complements</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson18" class="nav-link"><span>Lesson 18: Directional Complements</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson19" class="nav-link"><span>Lesson 19: Hobbies & Social</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson20" class="nav-link"><span>Lesson 20: Ordering Food</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson21" class="nav-link"><span>Lesson 21: Modern Tech & Slang</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson22" class="nav-link"><span>Lesson 22: Business & Work</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="lesson23" class="nav-link"><span>Lesson 23: Common Idioms (成語)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                </div>
+                            </details>
+
+                            <!-- Level 4 -->
+                            <details class="nav-dropdown group">
+                                <summary>Level 4: Detailed Chapters</summary>
+                                <div class="nav-dropdown-content">
+                                    <a href="#" data-page-id="chapter1" class="nav-link"><span>Chapter 1: Mandarin Alphabets</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter2" class="nav-link"><span>Chapter 2: Numbers (Detailed)</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter3" class="nav-link"><span>Chapter 3: Vegetables & Fruits</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter4" class="nav-link"><span>Chapter 4: Daily Life Products</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter5" class="nav-link"><span>Chapter 5: Family Conversations</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter6" class="nav-link"><span>Chapter 6: Friend Conversations</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter7" class="nav-link"><span>Chapter 7: Work Conversations</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter8" class="nav-link"><span>Chapter 8: School & Business</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter9" class="nav-link"><span>Chapter 9: Core Vocabulary</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                    <a href="#" data-page-id="chapter10" class="nav-link"><span>Chapter 10: Test Yourself</span><span class="progress-icons"><svg class="icon-eye" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg><svg class="icon-tick" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span></a>
+                                </div>
+                            </details>
+                        </div>
+                        
+                        <!-- "Start Learning" button moved to the end of the "how it works" section -->
+                         <div class="page-footer-nav mt-8 pt-0 border-t-0 flex justify-end">
+                            <button class="next-page-btn" data-next-page-id="lesson1">
+                                <span>Start Learning (Lesson 1)</span>
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Level 1: The Basics -->
+                <section id="level1" class="content-page-container">
+                    <!-- Lesson 1: The Tones -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson1">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 1: The Tones (聲調)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Mandarin is a tonal language. The "pitch" or contour of your voice changes the meaning of a syllable. Pinyin (拼音) helps us write these sounds and tones. There are four main tones plus a neutral one.</p>
+                        <ul class="space-y-4">
+                            <li><strong>1st Tone (<span class="pinyin">mā</span>):</strong> High & Level. Think of a sustained musical note. <span class="hanzi" data-speak="媽">媽</span> (<span class="pinyin">mā</span>) - mother</li>
+                            <li><strong>2nd Tone (<span class="pinyin">má</span>):</strong> Rising. Like asking a question, "Huh?". <span class="hanzi" data-speak="麻">麻</span> (<span class="pinyin">má</span>) - hemp</li>
+                            <li><strong>3rd Tone (<span class="pinyin">mǎ</span>):</strong> Dipping. Down, then up slightly. <span class="hanzi" data-speak="馬">馬</span> (<span class="pinyin">mǎ</span>) - horse</li>
+                            <li><strong>4th Tone (<span class="pinyin">mà</span>):</strong> Falling. A sharp, quick drop, like a command. <span class="hanzi" data-speak="罵">罵</span> (<span class="pinyin">mà</span>) - to scold</li>
+                            <li><strong>Neutral Tone (<span class="pinyin">ma</span>):</strong> Light & Quick. No tone mark, pronounced softly. <span class="hanzi" data-speak="嗎">嗎</span> (<span class="pinyin">ma</span>) - question particle</li>
+                        </ul>
+
+                        <h4 class="font-semibold mt-8 mb-3 text-lg text-slate-700">Tone Pair Practice</h4>
+                        <p class="mb-4 text-muted">Mandarin words are often 2 syllables. Practicing common tone pairs is essential for fluency.</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>1+1:</span> <span class="hanzi" data-speak="今天">今天</span> (<span class="pinyin">jīntiān</span>) - today</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>1+2:</span> <span class="hanzi" data-speak="中國">中國</span> (<span class="pinyin">Zhōngguó</span>) - China</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>1+3:</span> <span class="hanzi" data-speak="開車">開車</span> (<span class="pinyin">kāichē</span>) - drive car</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>1+4:</span> <span class="hanzi" data-speak="飛機">飛機</span> (<span class="pinyin">fēijì</span>) - airplane</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>2+1:</span> <span class="hanzi" data-speak="美國">美國</span> (<span class="pinyin">Měiguó</span>) - America</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>2+2:</span> <span class="hanzi" data-speak="朋友">朋友</span> (<span class="pinyin">péngyou</span>) - friend</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>2+3:</span> <span class="hanzi" data-speak="銀行">銀行</span> (<span class="pinyin">yínháng</span>) - bank</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>2+4:</span> <span class="hanzi" data-speak="回答">回答</span> (<span class="pinyin">huídá</span>) - answer</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>3+1:</span> <span class="hanzi" data-speak="你好">你好</span> (<span class="pinyin">nǐ hǎo</span>) - hello</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>3+2:</span> <span class="hanzi" data-speak="水果">水果</span> (<span class="pinyin">shuǐguǒ</span>) - fruit</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>3+3:</span> <span class="hanzi" data-speak="你好">你好</span> (<span class="pinyin">nǐ hǎo</span>) - hello <em class="text-xs text-slate-500">(spoken as 2+3)</em></div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>3+4:</span> <span class="hanzi" data-speak="喜歡">喜歡</span> (<span class="pinyin">xǐhuan</span>) - like</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>4+1:</span> <span class="hanzi" data-speak="再見">再見</span> (<span class="pinyin">zàijiàn</span>) - goodbye</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>4+2:</span> <span class="hanzi" data-speak="電視">電視</span> (<span class="pinyin">diànshì</span>) - TV</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>4+3:</span> <span class="hanzi" data-speak="考試">考試</span> (<span class="pinyin">kǎoshì</span>) - test</div> <!-- MODIFIED -->
+                            <div class="pinyin flex items-center justify-start flex-wrap gap-x-2 rounded-md"><span>4+4:</span> <span class="hanzi" data-speak="謝謝">謝謝</span> (<span class="pinyin">xièxie</span>) - thanks <em class="text-xs text-slate-500">(2nd is neutral)</em></div> <!-- MODIFIED -->
+                        </div>
+
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson5">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg>
+                                    <span>Previous Lesson</span>
+                                </button>
+                                <button class="home-page-btn" data-home-page-id="home">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg>
+                                    <span>Home</span>
+                                </button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson6"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson7"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- NEW: Lesson 7 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson7">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 7: Question Words (疑問詞)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Knowing how to ask questions is fundamental. Unlike English, Mandarin question words usually go in the same place where the answer would be.</p>
+
+                        <h4 class="font-semibold mt-6 mb-3 text-lg text-slate-700">The 5W1H Question Words</h4>
+                        <ul class="space-y-4">
+                            <li><strong>Who:</strong> <span class="hanzi" data-speak="誰">誰</span> (<span class="pinyin">shéi</span>)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="他是誰">他是誰？</span> (<span class="pinyin">Tā shì shéi?</span>) - Who is he? (Literally "He is who?")</small></li>
+                            
+                            <li><strong>What:</strong> <span class="hanzi" data-speak="什麼">什麼</span> (<span class="pinyin">shénme</span>)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="這是什麼">這是什麼？</span> (<span class="pinyin">Zhè shì shénme?</span>) - What is this? (Literally "This is what?")</small></li>
+
+                            <li><strong>Where:</strong> <span class="hanzi" data-speak="哪裡">哪裡</span> (<span class="pinyin">nǎlǐ</span>) or <span class="hanzi" data-speak="哪兒">哪兒</span> (<span class="pinyin">nǎr</span>)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="你在哪裡">你在哪裡？</span> (<span class="pinyin">Nǐ zài nǎlǐ?</span>) - Where are you? (Literally "You at where?")</small></li>
+
+                            <li><strong>When:</strong> <span class="hanzi" data-speak="什麼時候">什麼時候</span> (<span class="pinyin">shénme shíhou</span>)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="你什麼時候去">你什麼時候去？</span> (<span class="pinyin">Nǐ shénme shíhou qù?</span>) - When are you going? (Literally "You when go?")</small></li>
+
+                            <li><strong>Why:</strong> <span class="hanzi" data-speak="為什麼">為什麼</span> (<span class="pinyin">wèishénme</span>)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="你為什麼學中文">你為什麼學中文？</span> (<span class="pinyin">Nǐ wèishénme xué Zhōngwén?</span>) - Why do you learn Chinese?</small></li>
+
+                            <li><strong>How:</strong> <span class="hanzi" data-speak="怎麼">怎麼</span> (<span class="pinyin">zěnme</span>)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="這個怎麼說">這個怎麼說？</span> (<span class="pinyin">Zhège zěnme shuō?</span>) - How do you say this? (Literally "This how say?")</small></li>
+                        </ul>
+
+                        <h4 class="font-semibold mt-8 mb-3 text-lg text-slate-700">Other Important Question Words</h4>
+                        <ul class="space-y-4">
+                            <li><strong>How many/much:</strong> <span class="hanzi" data-speak="多少">多少</span> (<span class="pinyin">duōshao</span>) - (For numbers over 10)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="多少錢">多少錢？</span> (<span class="pinyin">Duōshao qián?</span>) - How much money?</small></li>
+
+                            <li><strong>How many:</strong> <span class="hanzi" data-speak="幾個">幾個</span> (<span class="pinyin">jǐ ge</span>) - (For numbers under 10)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="你們有幾個人">你們有幾個人？</span> (<span class="pinyin">Nǐmen yǒu jǐ ge rén?</span>) - How many people do you have? (Using traditional `個`)</small></li>
+
+                            <li><strong>Which:</strong> <span class="hanzi" data-speak="哪個">哪個</span> (<span class="pinyin">nǎge / něige</span>)
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="你要哪個">你要哪個？</span> (<span class="pinyin">Nǐ yào nǎge?</span>) - Which one do you want?</small></li>
+                        </ul>
+
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson6">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg>
+                                    <span>Previous Lesson</span>
+                                </button>
+                                <button class="home-page-btn" data-home-page-id="home">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg>
+                                    <span>Home</span>
+                                </button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson7"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson8"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Lesson 8: Buying Things -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson8">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 8: Buying Things (買東西)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">This lesson covers the essential vocabulary and phrases you'll need to buy items in a shop or market. The most important phrase is "How much money?"</p>
+                        
+                        <h4 class="font-semibold mt-6 mb-3 text-lg text-slate-700">Key Vocabulary</h4>
+                        <ul class="space-y-4">
+                            <li>To buy: <span class="hanzi" data-speak="買">買</span> (<span class="pinyin">mǎi</span>)</li>
+                            <li>To sell: <span class="hanzi" data-speak="賣">賣</span> (<span class="pinyin">mài</span>)</li>
+                            <li>Thing: <span class="hanzi" data-speak="東西">東西</span> (<span class="pinyin">dōngxi</span>)</li>
+                            <li>Money: <span class="hanzi" data-speak="錢">錢</span> (<span class="pinyin">qián</span>)</li>
+                            <li>Expensive: <span class="hanzi" data-speak="貴">貴</span> (<span class="pinyin">guì</span>)</li>
+                            <li>Cheap: <span class="hanzi" data-speak="便宜">便宜</span> (<span class="pinyin">piányi</span>)</li>
+                            <li>Money unit (colloquial): <span class="hanzi" data-speak="塊">塊</span> (<span class="pinyin">kuài</span>)</li>
+                            <li>1/10th unit (colloquial): <span class="hanzi" data-speak="毛">毛</span> (<span class="pinyin">máo</span>)</li>
+                        </ul>
+
+                        <h4 class="font-semibold mt-8 mb-3 text-lg text-slate-700">Common Phrases</h4>
+                        <ul class="space-y-4">
+                            <li><strong>I want to buy...</strong>
+                                <br><small class="text-muted"><span class="hanzi" data-speak="我要買...">我要買...</span> (<span class="pinyin">Wǒ yào mǎi...</span>)</small>
+                                <br><small class="text-muted">Ex: <span class="hanzi" data-speak="我要買一個蘋果">我要買一個蘋果。</span> (<span class="pinyin">Wǒ yào mǎi yí ge píngguǒ.</span>)</small></li>
+                            <li><strong>How much money?</strong> (The most important phrase!)
+                                <br><small class="text-muted"><span class="hanzi" data-speak="多少錢">多少錢?</span> (<span class="pinyin">Duōshao qián?</span>)</small></li>
+                            <li><strong>Too expensive!</strong>
+                                <br><small class="text-muted"><span class="hanzi" data-speak="太貴了">太貴了!</span> (<span class="pinyin">Tài guì le!</span>)</small></li>
+                            <li><strong>Can it be cheaper?</strong> (Bargaining)
+                                <br><small class="text-muted"><span class="hanzi" data-speak="可以便宜一點嗎">可以便宜一點嗎?</span> (<span class="pinyin">Kěyǐ piányi yìdiǎn ma?</span>)</small></li>
+                            <li><strong>Do you have...?</strong>
+                                <br><small class="text-muted"><span class="hanzi" data-speak="你有沒有...">你有沒有...?</span> (<span class="pinyin">Nǐ yǒu méiyǒu...?</span>)</small></li>
+                        </ul>
+
+                        <h4 class="font-semibold mt-8 mb-3 text-lg text-slate-700">Shopkeeper Responses (店家回應)</h4>
+                        <p class="mb-4 text-muted">Here are some common things you might hear from the person selling items.</p>
+                        <ul class="space-y-4">
+                            <li><strong>What do you want to buy?</strong>
+                                <br><small class="text-muted"><span class="hanzi" data-speak="你要買什麼">你要買什麼？</span> (<span class="pinyin">Nǐ yào mǎi shénme?</span>)</small></li>
+                            <li><strong>This is 50 dollars.</strong>
+                                <br><small class="text-muted"><span class="hanzi" data-speak="這個五十塊">這個五十塊。</span> (<span class="pinyin">Zhège wǔshí kuài.</span>)</small></li>
+                            <li><strong>We don't have that.</strong>
+                                <br><small class="text-muted"><span class="hanzi" data-speak="我們沒有那個">我們沒有那個。</span> (<span class="pinyin">Wǒmen méiyǒu nàge.</span>)</small></li>
+                            <li><strong>Okay, a bit cheaper is fine.</strong> (Agreeing to bargain)
+                                <br><small class="text-muted"><span class="hanzi" data-speak="好的 便宜一點可以">好的，便宜一點可以。</span> (<span class="pinyin">Hǎo de, piányi yìdiǎn kěyǐ.</span>)</small></li>
+                            <li><strong>Sorry, no bargaining.</strong>
+                                <br><small class="text-muted"><span class="hanzi" data-speak="不好意思 不二價">不好意思，不二價。</span> (<span class="pinyin">Bù hǎoyìsi, bú èr jià.</span>)</small></li>
+                        </ul>
+                        
+                        <h4 class="font-semibold mt-8 mb-3 text-lg text-slate-700">Ways to Pay (付錢)</h4>
+                        <p class="mb-4 text-muted">How you pay is just as important as what you buy.</p>
+                        <ul class="space-y-4">
+                            <li>Pay money: <span class="hanzi" data-speak="付錢">付錢</span> (<span class="pinyin">fù qián</span>)</li>
+                            <li>Use cash: <span class="hanzi" data-speak="用現金">用現金</span> (<span class="pinyin">yòng xiànjīn</span>)</li>
+                            <li>Swipe card (credit card): <span class="hanzi" data-speak="刷卡">刷卡</span> (<span class="pinyin">shuā kǎ</span>)</li>
+                            <li>Scan code (very common): <span class="hanzi" data-speak="掃碼">掃碼</span> (<span class="pinyin">sǎo mǎ</span>)</li>
+                        </ul>
+
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson7">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg>
+                                    <span>Previous Lesson</span>
+                                </button>
+                                <button class="home-page-btn" data-home-page-id="home">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg>
+                                    <span>Home</span>
+                                </button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson8"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson9"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+                
+                 <section id="level2" class="content-page-container">
+                    <!-- NEW: Placeholder for Lesson 9 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson9">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 9: Using 'le' (了)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Content for Lesson 9 will go here.</p>
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson8"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg><span>Previous Lesson</span></button>
+                                <button class="home-page-btn" data-home-page-id="home"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg><span>Home</span></button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson9"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson10"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- NEW: Placeholder for Lesson 10 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson10">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 10: Using 'guo' (過)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Content for Lesson 10 will go here.</p>
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson9"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg><span>Previous Lesson</span></button>
+                                <button class="home-page-btn" data-home-page-id="home"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg><span>Home</span></button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson10"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson11"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <!-- NEW: Placeholder for Lesson 11 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson11">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 11: Using 'zai' (在)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Content for Lesson 11 will go here.</p>
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson10"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg><span>Previous Lesson</span></button>
+                                <button class="home-page-btn" data-home-page-id="home"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg><span>Home</span></button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson11"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson12"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- NEW: Placeholder for Lesson 12 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson12">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 12: Dates & Time</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Content for Lesson 12 will go here.</p>
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson11"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg><span>Previous Lesson</span></button>
+                                <button class="home-page-btn" data-home-page-id="home"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg><span>Home</span></button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson12"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson13"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- NEW: Placeholder for Lesson 13 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson13">
+                        <h3 class="card-title text-xl font-semibold mb-4">Lesson 13: Measure Words (量詞)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Content for Lesson 13 will go here.</p>
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson12"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg><span>Previous Lesson</span></button>
+                                <button class="home-page-btn" data-home-page-id="home"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg><span>Home</span></button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="lesson13"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="lesson14"><span>Next Lesson</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <!-- ... (Placeholders for L14, L15, L16) ... -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson14"><h3 class="card-title text-xl font-semibold mb-4">Lesson 14: 'De' Particles (的, 地, 得)</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson13">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson14">...</button><button class="next-page-btn" data-next-page-id="lesson15">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson15"><h3 class="card-title text-xl font-semibold mb-4">Lesson 15: Comparisons (比, 跟)</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson14">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson15">...</button><button class="next-page-btn" data-next-page-id="lesson16">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson16"><h3 class="card-title text-xl font-semibold mb-4">Lesson 16: 'Ba' Sentence (把)</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson15">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson16">...</button><button class="next-page-btn" data-next-page-id="lesson17">...</button></div></div></article>
+                 </section>
+                
+                 <section id="level3" class="content-page-container">
+                    <!-- ... (Placeholders for L17-L23) ... -->
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson17"><h3 class="card-title text-xl font-semibold mb-4">Lesson 17: Result Complements</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson16">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson17">...</button><button class="next-page-btn" data-next-page-id="lesson18">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson18"><h3 class="card-title text-xl font-semibold mb-4">Lesson 18: Directional Complements</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson17">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson18">...</button><button class="next-page-btn" data-next-page-id="lesson19">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson19"><h3 class="card-title text-xl font-semibold mb-4">Lesson 19: Hobbies & Social</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson18">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson19">...</button><button class="next-page-btn" data-next-page-id="lesson20">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson20"><h3 class="card-title text-xl font-semibold mb-4">Lesson 20: Ordering Food</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson19">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson20">...</button><button class="next-page-btn" data-next-page-id="lesson21">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson21"><h3 class="card-title text-xl font-semibold mb-4">Lesson 21: Modern Tech & Slang</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson20">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson21">...</button><button class="next-page-btn" data-next-page-id="lesson22">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson22"><h3 class="card-title text-xl font-semibold mb-4">Lesson 22: Business & Work</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson21">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson22">...</button><button class="next-page-btn" data-next-page-id="lesson23">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="lesson23"><h3 class="card-title text-xl font-semibold mb-4">Lesson 23: Common Idioms (成語)</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="lesson22">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="lesson23">...</button><button class="next-page-btn" data-next-page-id="chapter1">...</button></div></div></article>
+                 </section>
+
+                 <section id="level4" class="content-page-container">
+                    <!-- NEW: Placeholder for Chapter 1 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter1">
+                        <h3 class="card-title text-xl font-semibold mb-4">Chapter 1: Mandarin Alphabets</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Content for Chapter 1 will go here.</p>
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="lesson23"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg><span>Previous Lesson</span></button>
+                                <button class="home-page-btn" data-home-page-id="home"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg><span>Home</span></button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="chapter1"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="chapter2"><span>Next Chapter</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- NEW: Placeholder for Chapter 2 -->
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter2">
+                        <h3 class="card-title text-xl font-semibold mb-4">Chapter 2: Numbers (Detailed)</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Content for Chapter 2 will go here.</p>
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="chapter1"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg><span>Previous Lesson</span></button>
+                                <button class="home-page-btn" data-home-page-id="home"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg><span>Home</span></button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="chapter2"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="chapter3"><span>Next Chapter</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Chapter 3: Vegetables & Fruits -->
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter3"><h3 class="card-title text-xl font-semibold mb-4">Chapter 3: Vegetables & Fruits</h3>
+                        <p class="mb-5 text-muted leading-relaxed">Let's learn the names of common vegetables and fruits. This is essential vocabulary for markets and restaurants.</p>
+                        
+                        <h4 class="font-semibold mt-6 mb-3 text-lg text-slate-700">Vegetables (蔬菜 - <span class="pinyin" data-speak="shūcài">shūcài</span>)</h4>
+                        <div class="overflow-x-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>English</th>
+                                        <th>Character</th>
+                                        <th>Pinyin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Vegetable (general)</td>
+                                        <td><span class="hanzi" data-speak="蔬菜">蔬菜</span></td>
+                                        <td><span class="pinyin">shūcài</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cabbage</td>
+                                        <td><span class="hanzi" data-speak="白菜">白菜</span></td>
+                                        <td><span class="pinyin">báicài</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Spinach</td>
+                                        <td><span class="hanzi" data-speak="菠菜">菠菜</span></td>
+                                        <td><span class="pinyin">bōcài</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Potato</td>
+                                        <td><span class="hanzi" data-speak="土豆">土豆</span></td>
+                                        <td><span class="pinyin">tǔdòu</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Carrot</td>
+                                        <td><span class="hanzi" data-speak="胡蘿蔔">胡蘿蔔</span></td>
+                                        <td><span class="pinyin">húluóbo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tomato</td>
+                                        <td><span class="hanzi" data-speak="西紅柿">西紅柿</span></td>
+                                        <td><span class="pinyin">xīhóngshì</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cucumber</td>
+                                        <td><span class="hanzi" data-speak="黃瓜">黃瓜</span></td>
+                                        <td><span class="pinyin">huángguā</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Onion</td>
+                                        <td><span class="hanzi" data-speak="洋蔥">洋蔥</span></td>
+                                        <td><span class="pinyin">yángcōng</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Garlic</td>
+                                        <td><span class="hanzi" data-speak="大蒜">大蒜</span></td>
+                                        <td><span class="pinyin">dàsuàn</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mushroom</td>
+                                        <td><span class="hanzi" data-speak="蘑菇">蘑菇</span></td>
+                                        <td><span class="pinyin">mógu</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Eggplant</td>
+                                        <td><span class="hanzi" data-speak="茄子">茄子</span></td>
+                                        <td><span class="pinyin">qiézi</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bell Pepper</td>
+                                        <td><span class="hanzi" data-speak="青椒">青椒</span></td>
+                                        <td><span class="pinyin">qīngjiāo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Broccoli</td>
+                                        <td><span class="hanzi" data-speak="西蘭花">西蘭花</span></td>
+                                        <td><span class="pinyin">xīlánhuā</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lettuce</td>
+                                        <td><span class="hanzi" data-speak="生菜">生菜</span></td>
+                                        <td><span class="pinyin">shēngcài</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <h4 class="font-semibold mt-8 mb-3 text-lg text-slate-700">Fruits (水果 - <span class="pinyin" data-speak="shuǐguǒ">shuǐguǒ</span>)</h4>
+                        <div class="overflow-x-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>English</th>
+                                        <th>Character</th>
+                                        <th>Pinyin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Fruit (general)</td>
+                                        <td><span class="hanzi" data-speak="水果">水果</span></td>
+                                        <td><span class="pinyin">shuǐguǒ</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Apple</td>
+                                        <td><span class="hanzi" data-speak="蘋果">蘋果</span></td>
+                                        <td><span class="pinyin">píngguǒ</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Banana</td>
+                                        <td><span class="hanzi" data-speak="香蕉">香蕉</span></td>
+                                        <td><span class="pinyin">xiāngjiāo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Orange</td>
+                                        <td><span class="hanzi" data-speak="橙子">橙子</span></td>
+                                        <td><span class="pinyin">chéngzi</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Watermelon</td>
+                                        <td><span class="hanzi" data-speak="西瓜">西瓜</span></td>
+                                        <td><span class="pinyin">xīguā</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Grapes</td>
+                                        <td><span class="hanzi" data-speak="葡萄">葡萄</span></td>
+                                        <td><span class="pinyin">pútao</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Strawberry</td>
+                                        <td><span class="hanzi" data-speak="草莓">草莓</span></td>
+                                        <td><span class="pinyin">cǎoméi</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mango</td>
+                                        <td><span class="hanzi" data-speak="芒果">芒果</span></td>
+                                        <td><span class="pinyin">mángguǒ</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Peach</td>
+                                        <td><span class="hanzi" data-speak="桃子">桃子</span></td>
+                                        <td><span class="pinyin">táozi</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pear</td>
+                                        <td><span class="hanzi" data-speak="梨">梨</span></td>
+                                        <td><span class="pinyin">lí</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pineapple</td>
+                                        <td><span class="hanzi" data-speak="菠蘿">菠蘿</span></td>
+                                        <td><span class="pinyin">bōluó</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lychee</td>
+                                        <td><span class="hanzi" data-speak="荔枝">荔枝</span></td>
+                                        <td><span class="pinyin">lìzhī</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4 class="font-semibold mt-8 mb-3 text-lg text-slate-700">Common Drinks (飲料 - <span class="pinyin" data-speak="yǐnliào">yǐnliào</span>)</h4>
+                        <div class="overflow-x-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>English</th>
+                                        <th>Character</th>
+                                        <th>Pinyin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Drink (general)</td>
+                                        <td><span class="hanzi" data-speak="飲料">飲料</span></td>
+                                        <td><span class="pinyin">yǐnliào</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Water</td>
+                                        <td><span class="hanzi" data-speak="水">水</span></td>
+                                        <td><span class="pinyin">shuǐ</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tea</td>
+                                        <td><span class="hanzi" data-speak="茶">茶</span></td>
+                                        <td><span classa="pinyin">chá</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Coffee</td>
+                                        <td><span class="hanzi" data-speak="咖啡">咖啡</span></td>
+                                        <td><span class="pinyin">kāfēi</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Juice</td>
+                                        <td><span class="hanzi" data-speak="果汁">果汁</span></td>
+                                        <td><span class="pinyin">guǒzhī</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Milk</td>
+                                        <td><span class="hanzi" data-speak="牛奶">牛奶</span></td>
+                                        <td><span class="pinyin">niúnǎi</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cola</td>
+                                        <td><span class="hanzi" data-speak="可樂">可樂</span></td>
+                                        <td><span class="pinyin">kělè</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Beer</td>
+                                        <td><span class="hanzi" data-speak="啤酒">啤酒</span></td>
+                                        <td><span class="pinyin">píjiǔ</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="page-footer-nav">
+                            <div class="flex gap-3">
+                                <button class="prev-page-btn" data-prev-page-id="chapter2">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path></svg>
+                                    <span>Previous Lesson</span>
+                                </button>
+                                <button class="home-page-btn" data-home-page-id="home">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-4a1 1 0 001-1v-4a1 1 0 00-1-1H9a1 1 0 00-1 1v4a1 1 0 001 1h1z"></path></svg>
+                                    <span>Home</span>
+                                </button>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="mark-complete-btn" data-page-id="chapter3"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Mark as Completed</span></button>
+                                <button class="next-page-btn" data-next-page-id="chapter4"><span>Next Chapter</span><svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></button>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <!-- ... Other chapters ... -->
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter4"><h3 class="card-title text-xl font-semibold mb-4">Chapter 4: Daily Life Products</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="chapter3">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="chapter4">...</button><button class="next-page-btn" data-next-page-id="chapter5">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter5"><h3 class="card-title text-xl font-semibold mb-4">Chapter 5: Family Conversations</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="chapter4">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="chapter5">...</button><button class="next-page-btn" data-next-page-id="chapter6">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter6"><h3 class="card-title text-xl font-semibold mb-4">Chapter 6: Friend Conversations</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="chapter5">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="chapter6">...</button><button class="next-page-btn" data-next-page-id="chapter7">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter7"><h3 class="card-title text-xl font-semibold mb-4">Chapter 7: Work Conversations</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="chapter6">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="chapter7">...</button><button class="next-page-btn" data-next-page-id="chapter8">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter8"><h3 class="card-title text-xl font-semibold mb-4">Chapter 8: School & Business</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="chapter7">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="chapter8">...</button><button class="next-page-btn" data-next-page-id="chapter9">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter9"><h3 class="card-title text-xl font-semibold mb-4">Chapter 9: Core Vocabulary</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="chapter8">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="chapter9">...</button><button class="next-page-btn" data-next-page-id="chapter10">...</button></div></div></article>
+                    <article class="content-page card p-6 mb-8" data-page-id="chapter10"><h3 class="card-title text-xl font-semibold mb-4">Chapter 10: Test Yourself</h3><p>...</p><div class="page-footer-nav"><div class="flex gap-3"><button class="prev-page-btn" data-prev-page-id="chapter9">...</button><button class="home-page-btn" data-home-page-id="home">...</button></div><div class="flex gap-3"><button class="mark-complete-btn" data-page-id="chapter10">...</button><!-- No next button on last page --></div></div></article>
+
+                 </section>
+                
+                <!-- FOOTER -->
+                <footer class="mt-16 pt-8 border-t border-slate-200 text-center text-slate-500 text-sm">
+                    <p>&copy; 2025 brianhexer / Mandarin Guide. All rights reserved.</p>
+                </footer>
+                
+            </div>
+        </div>
+    </main>
+
+    <!-- SEARCH MODAL -->
+    <div id="search-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="true">
+        <!-- Modal Overlay -->
+        <div id="search-modal-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-lg p-0 bg-white rounded-lg shadow-xl transform transition-all overflow-hidden">
+            <!-- Search Input -->
+            <div class="relative p-4">
+                 <input type="search" id="search-input" placeholder="Search lessons..." class="w-full pl-10 pr-12 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                 </div>
+                 <button id="search-modal-close" aria-label="Close search" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                 </button>
+            </div>
+            
+            <!-- Search Results -->
+            <div id="search-results-container" class="max-h-96 overflow-y-auto p-4 border-t border-slate-200">
+                <p class="text-center text-slate-500">Type to search for lessons.</p>
+            </div>
+        </div>
+    </div>
+    <!-- END SEARCH MODAL -->
+
+    <!-- VERIFICATION MODAL (Unchanged) -->
+    <div id="next-lesson-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="true">
+        <!-- Modal Overlay -->
+        <div id="modal-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative w-full max-w-md p-6 bg-white rounded-lg shadow-xl transform transition-all">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4 0 1.152-.468 2.185-1.22 2.963C13.978 14.63 13 15.21 13 16h-1v-1.5c0-1.076.62-2.062 1.62-2.887C14.43 10.843 15 10.106 15 9c0-1.105-.895-2-2-2-1.036 0-1.85.738-1.98 1.707L8.228 9zM12 20a1 1 0 100-2 1 1 0 000 2z"></path></svg>
+                </div>
+                <div class="ml-4 text-left">
+                    <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">Proceed to Next Lesson?</h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500">
+                            Are you sure you're ready to move on?
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center space-x-2 mt-4 pt-4 border-t border-gray-200">
+                <span class="text-sm text-slate-600">Connect with Admin &gt;&gt;&gt;</span>
+                
+                <div class="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
+                     <img class="w-full h-full object-cover" 
+                          src="./images/profile.jpg" 
+                          alt="Brian's profile picture"
+                          onerror="this.parentElement.innerHTML = `<svg class='w-6 h-6 text-slate-400' fill='currentColor' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'><path fill-rule='evenodd' d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z' clip-rule='evenodd'></path></svg>`">
+                </div>
+        
+                <a href="https://www.instagram.com/brian_offl/" target="_blank" rel="noopener noreferrer" class="insta-btn flex items-center border border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <!-- MODIFIED: removed mr-2 -->
+                        <rect x="2" y="2" width="20" height="20" rx="5.657" ry="5.657"></rect>
+                        <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
+                    </svg>
+                    <span class="inline-block ml-2 typewriter-button">Insta</span> <!-- MODIFIED: Added inline-block, ml-2, typewriter-button -->
+                </a>
+                <a href="https://github.com/brianhexer" target="_blank" rel="noopener noreferrer" class="flex items-center border border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"> <!-- MODIFIED: removed mr-2 -->
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    <span class="inline-block ml-2 typewriter-button">GitHub</span> <!-- MODIFIED: Added inline-block, ml-2, typewriter-button -->
+                </a>
+            </div>
+
+            <div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse gap-3">
+                <button id="modal-confirm-btn" type="button" class="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 sm:w-auto sm:text-sm transition-colors">
+                    Yes, Proceed
+                </button>
+                <button id="modal-cancel-btn" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                    Not Yet
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- END MODAL -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- PWA Service Worker Registration ---
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('./sw.js').catch(err => {
+                console.error('Service Worker registration failed:', err);
+              });
+            }
+
+            // --- NEW: PWA Install Button Logic ---
+            let deferredPrompt;
+            const homeInstallBtn = document.getElementById('home-install-btn');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                // Prevent the mini-infobar from appearing on mobile
+                e.preventDefault();
+                // Stash the event so it can be triggered later.
+                deferredPrompt = e;
+                // Update UI to notify the user they can install the PWA
+                if (homeInstallBtn) {
+                    homeInstallBtn.classList.remove('hidden');
+                }
+            });
+
+            if (homeInstallBtn) {
+                homeInstallBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        // Show the install prompt
+                        deferredPrompt.prompt();
+                        // Wait for the user to respond to the prompt
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log(`User response to the install prompt: ${outcome}`);
+                        // We've used the prompt, and can't use it again, clear it
+                        deferredPrompt = null;
+                        // Hide the install button
+                        homeInstallBtn.classList.add('hidden');
+                    }
+                });
+            }
+
+            window.addEventListener('appinstalled', () => {
+                // Hide the install button
+                if (homeInstallBtn) {
+                    homeInstallBtn.classList.add('hidden');
+                }
+                deferredPrompt = null;
+                console.log('PWA was installed');
+            });
+            // --- END NEW PWA Install Logic ---
+
+
+            // --- STATE MANAGEMENT ---
+            const STORAGE_KEY = 'mandarinGuideProgress';
+            let currentPageId = 'home';
+            let progress = { completed: [] };
+            let pendingNextPageId = null;
+            
+            // --- Modal Elements ---
+            const modal = document.getElementById('next-lesson-modal');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+            const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+            // --- NEW: Search Modal Elements ---
+            const searchIconBtn = document.getElementById('search-icon-btn');
+            const searchModal = document.getElementById('search-modal');
+            const searchModalOverlay = document.getElementById('search-modal-overlay');
+            const searchModalClose = document.getElementById('search-modal-close');
+            const searchInput = document.getElementById('search-input');
+            const searchResultsContainer = document.getElementById('search-results-container');
+            
+            // --- UPDATED: Collect all page IDs from the new nav links ---
+            const allPageIds = ['home', ...Array.from(document.querySelectorAll('.nav-link[data-page-id]'))
+                                         .map(a => a.dataset.pageId)
+                                         .filter(id => id !== 'home')];
+            const totalLessons = allPageIds.length - 1;
+            let searchIndex = [];
+
+            // --- CORE FUNCTIONS ---
+
+            function saveProgress() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+                } catch (e) {
+                    console.error("Failed to save progress to localStorage", e);
+                }
+            }
+
+            function loadProgress() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    if (data) {
+                        progress = JSON.parse(data);
+                        if (!progress.completed) progress.completed = [];
+                    } else {
+                        progress = { completed: [] };
+                    }
+                } catch (e) {
+                    console.error("Failed to load progress from localStorage", e);
+                    progress = { completed: [] };
+                }
+            }
+
+            function showPage(pageId) {
+                if (!pageId) pageId = 'home';
+                currentPageId = pageId;
+
+                document.querySelectorAll('.content-page').forEach(page => {
+                    page.classList.remove('active');
+                });
+
+                const activePage = document.querySelector(`.content-page[data-page-id="${pageId}"]`);
+                if (activePage) {
+                    activePage.classList.add('active');
+                } else {
+                    document.querySelector('.content-page[data-page-id="home"]').classList.add('active');
+                    currentPageId = 'home';
+                }
+                
+                window.scrollTo(0, 0);
+                updateUI();
+            }
+            
+            function togglePageCompletion(pageId) {
+                const btn = document.querySelector(`.mark-complete-btn[data-page-id="${pageId}"]`);
+                if (progress.completed.includes(pageId)) {
+                    progress.completed = progress.completed.filter(id => id !== pageId);
+                    if(btn) btn.classList.remove('is-completed');
+                } else {
+                    progress.completed.push(pageId);
+                    if(btn) btn.classList.add('is-completed');
+                }
+                saveProgress();
+                updateUI();
+            }
+
+            function markPageAsCompleted(pageId) {
+                if (pageId === 'home') return;
+                
+                const btn = document.querySelector(`.mark-complete-btn[data-page-id="${pageId}"]`);
+                if (!progress.completed.includes(pageId)) {
+                    progress.completed.push(pageId);
+                    if(btn) btn.classList.add('is-completed');
+                    saveProgress();
+                    updateUI();
+                }
+            }
+
+            function updateUI() {
+                // --- UPDATED: Update nav links on home page ---
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    const pageId = link.dataset.pageId;
+                    
+                    link.classList.remove('is-viewing', 'is-completed');
+
+                    if (progress.completed.includes(pageId)) {
+                        link.classList.add('is-completed');
+                    }
+                    if (pageId === currentPageId) {
+                        link.classList.add('is-viewing');
+                        // NEW: Open the parent dropdown if the active page is inside
+                        const parentDropdown = link.closest('details');
+                        if (parentDropdown) {
+                            parentDropdown.open = true;
+                        }
+                    }
+                });
+
+                // Update current page's "Mark as Completed" button
+                const currentCompleteBtn = document.querySelector(`.mark-complete-btn[data-page-id="${currentPageId}"]`);
+                if (currentCompleteBtn) {
+                    if (progress.completed.includes(currentPageId)) {
+                        currentCompleteBtn.classList.add('is-completed');
+                        currentCompleteBtn.querySelector('span').innerText = 'Completed!';
+                    } else {
+                        currentCompleteBtn.classList.remove('is-completed');
+                        currentCompleteBtn.querySelector('span').innerText = 'Mark as Completed';
+                    }
+                }
+                
+                // Update main progress bar
+                updateProgressBar();
+            }
+            
+            function updateProgressBar() {
+                const completedCount = progress.completed.length;
+                const percent = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
+                
+                const bar = document.getElementById('progress-bar');
+                const text = document.getElementById('progress-text');
+                
+                if (bar) bar.style.width = `${percent}%`;
+                if (text) text.innerText = `${completedCount} / ${totalLessons} Completed`;
+            }
+
+            // --- NEW: Search Functions ---
+
+            function buildSearchIndex() {
+                searchIndex = [];
+                allPageIds.forEach(pageId => {
+                    if (pageId === 'home') return; // Don't index home page
+                    
+                    const pageElement = document.querySelector(`.content-page[data-page-id="${pageId}"]`);
+                    if (!pageElement) return;
+
+                    const titleEl = pageElement.querySelector('.card-title');
+                    const title = titleEl ? titleEl.innerText.trim() : 'No Title';
+                    
+                    // Get all relevant text content, avoid script tags
+                    const content = Array.from(pageElement.querySelectorAll('p, li, th, td'))
+                                      .map(el => el.textContent.trim())
+                                      .join(' ')
+                                      .toLowerCase();
+                    
+                    searchIndex.push({
+                        id: pageId,
+                        title: title,
+                        content: content,
+                        snippet: pageElement.querySelector('p.text-muted') ? pageElement.querySelector('p.text-muted').innerText.trim() : 'Click to see content...'
+                    });
+                });
+            }
+
+            function openSearchModal() {
+                if (searchModal) searchModal.setAttribute('aria-hidden', 'false');
+                if (searchInput) searchInput.focus();
+                performSearch(); // Show initial state
+            }
+
+            function closeSearchModal() {
+                if (searchModal) searchModal.setAttribute('aria-hidden', 'true');
+                if (searchInput) searchInput.value = '';
+                if (searchResultsContainer) searchResultsContainer.innerHTML = '<p class="text-center text-slate-500">Type to search for lessons.</p>';
+            }
+
+            function performSearch() {
+                if (!searchInput || !searchResultsContainer) return;
+
+                const query = searchInput.value.trim().toLowerCase();
+                
+                if (query.length < 1) {
+                    searchResultsContainer.innerHTML = '<p class="text-center text-slate-500">Type to search for lessons.</p>';
+                    return;
+                }
+
+                const results = searchIndex.filter(item => 
+                    item.title.toLowerCase().includes(query) || 
+                    item.content.includes(query)
+                );
+
+                if (results.length === 0) {
+                    searchResultsContainer.innerHTML = `<p class="text-center text-slate-500">No results found for "<strong>${escapeHTML(query)}</strong>".</p>`;
+                    return;
+                }
+
+                searchResultsContainer.innerHTML = results.map(item => `
+                    <a href="#" class="search-result-item" data-page-id="${item.id}">
+                        <h4>${item.title}</h4>
+                        <p>${escapeHTML(item.snippet)}</p>
+                    </a>
+                `).join('');
+            }
+            
+            function escapeHTML(str) {
+                return str.replace(/[&<>"']/g, function(match) {
+                    return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    }[match];
+                });
+            }
+
+            // --- Modal Functions (Unchanged) ---
+            function openModal(nextId) {
+                pendingNextPageId = nextId;
+                if (modal) modal.setAttribute('aria-hidden', 'false');
+            }
+            
+            function closeModal() {
+                pendingNextPageId = null;
+                if (modal) modal.setAttribute('aria-hidden', 'true');
+            }
+
+            // --- REMOVED: SIDEBAR TOGGLE ---
+
+            // --- EVENT LISTENERS ---
+
+            // --- UPDATED: Nav Link Clicks ---
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = e.currentTarget.dataset.pageId;
+                    showPage(pageId);
+                    // REMOVED: Sidebar close logic
+                });
+            });
+            
+            // "Mark as Completed" Button Clicks (Unchanged)
+            document.querySelectorAll('.mark-complete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const pageId = e.currentTarget.dataset.pageId;
+                    togglePageCompletion(pageId);
+                });
+            });
+
+            // "Next Page" Button Clicks (Unchanged)
+            document.querySelectorAll('.next-page-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const nextId = e.currentTarget.dataset.nextPageId;
+                    const currentPage = e.currentTarget.closest('.content-page');
+                    if (currentPage && currentPage.dataset.pageId === 'home') {
+                        showPage(nextId);
+                    } else {
+                        openModal(nextId);
+                    }
+                });
+            });
+
+            // "Previous Page" Button Clicks (Unchanged)
+            document.querySelectorAll('.prev-page-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const prevId = e.currentTarget.dataset.prevPageId;
+                    showPage(prevId);
+                });
+            });
+
+            // "Back to Home" Button Clicks (Unchanged)
+            document.querySelectorAll('.home-page-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const homeId = e.currentTarget.dataset.homePageId || 'home';
+                    showPage(homeId);
+                });
+            });
+
+            // --- Modal Event Listeners (Unchanged) ---
+            if (modalConfirmBtn) {
+                modalConfirmBtn.addEventListener('click', () => {
+                    if (currentPageId && currentPageId !== 'home') {
+                        markPageAsCompleted(currentPageId);
+                    }
+                    if (pendingNextPageId) {
+                        showPage(pendingNextPageId);
+                    }
+                    closeModal();
+                });
+            }
+            if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
+            if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
+
+            // --- NEW: Search Event Listeners ---
+            if (searchIconBtn) {
+                searchIconBtn.addEventListener('click', openSearchModal);
+            }
+            if (searchModalClose) {
+                searchModalClose.addEventListener('click', closeSearchModal);
+            }
+            if (searchModalOverlay) {
+                searchModalOverlay.addEventListener('click', closeSearchModal);
+            }
+            if (searchInput) {
+                searchInput.addEventListener('input', performSearch);
+            }
+            
+            // Handle clicks on search results
+            if (searchResultsContainer) {
+                 searchResultsContainer.addEventListener('click', (e) => {
+                    const resultItem = e.target.closest('.search-result-item');
+                    if (resultItem) {
+                        e.preventDefault();
+                        const pageId = resultItem.dataset.pageId;
+                        showPage(pageId);
+                        closeSearchModal();
+                    }
+                 });
+            }
+
+            // --- NEW: Accordion for Nav Dropdowns ---
+            const allDropdowns = document.querySelectorAll('.nav-dropdown');
+            allDropdowns.forEach(dropdown => {
+                dropdown.addEventListener('toggle', (e) => {
+                    // Only act if the dropdown is being opened
+                    if (e.target.open) {
+                        // Close all *other* dropdowns
+                        allDropdowns.forEach(d => {
+                            if (d !== e.target) {
+                                d.open = false;
+                            }
+                        });
+                    }
+                });
+            });
+
+
+            // --- SPEECH SYNTHESIS (Unchanged) ---
+            let voices = [];
+            let synth = window.speechSynthesis;
+            
+            function getMandarinVoice() {
+                const preferredVoices = voices.filter(v => v.lang === 'zh-CN');
+                if (preferredVoices.length > 0) return preferredVoices[0];
+                const anyChineseVoice = voices.find(v => v.lang.startsWith('zh'));
+                if (anyChineseVoice) return anyChineseVoice;
+                return null;
+            }
+
+            function populateVoiceList() {
+                if (synth) {
+                    voices = synth.getVoices();
+                    addSpeakButtons(); 
+                } else {
+                    console.warn("Speech Synthesis not supported or not initialized yet.");
+                }
+            }
+            
+             if (synth) {
+                if (synth.getVoices().length > 0) {
+                    populateVoiceList();
+                } else {
+                    synth.onvoiceschanged = populateVoiceList;
+                    setTimeout(() => {
+                        if (voices.length === 0) {
+                            populateVoiceList(); 
+                        }
+                    }, 500);
+                }
+            } else {
+                console.error("Speech Synthesis is not supported in this browser.");
+                addSpeakButtons();
+            }
+
+            function speak(text, lang = 'zh-CN') {
+                if (!synth) {
+                    console.warn('Your browser does not support speech synthesis.');
+                    return;
+                }
+                if (synth.speaking) synth.cancel();
+
+                let utterance = new SpeechSynthesisUtterance(text);
+                let mandarinVoice = getMandarinVoice();
+                
+                if (mandarinVoice) {
+                    utterance.voice = mandarinVoice;
+                    utterance.lang = mandarinVoice.lang; 
+                } else {
+                    utterance.lang = lang;
+                    console.warn("No specific Mandarin voice found. Using default voice for lang=" + lang);
+                }
+                
+                utterance.rate = 0.9;
+                utterance.pitch = 1; 
+                utterance.onerror = (event) => console.error('SpeechSynthesisUtterance.onerror', event);
+                synth.speak(utterance);
+            }
+
+             function addSpeakButtons() {
+                const elements = document.querySelectorAll('.hanzi, .speakable-pinyin');
+                elements.forEach(el => {
+                    if (el.dataset.hasButton === 'true') return; 
+                    el.dataset.hasButton = 'true';
+
+                    const textToSpeak = el.getAttribute('data-speak') || el.innerText;
+                    if (!textToSpeak || textToSpeak.trim() === '') return;
+
+                    const btnWrapper = document.createElement('span');
+                    const btn = document.createElement('button');
+                    btn.setAttribute('aria-label', `Listen to ${textToSpeak}`);
+                    btn.className = 'listen-btn p-1 rounded-md transform active:scale-90 transition-transform';
+                    btn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9 9 0 0119 10a9 9 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7 7 0 0017 10a7 7 0 00-1.757-4.95 1 1 0 010-1.121z" clip-rule="evenodd"></path></svg>`;
+                    
+                    if (synth) {
+                        btn.onclick = (e) => {
+                            e.stopPropagation(); 
+                            speak(textToSpeak);
+                        };
+                    } else {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.cursor = 'not-allowed';
+                    }
+                    
+                    btnWrapper.appendChild(btn);
+
+                    if (el.parentNode.classList.contains('pinyin') && el.parentNode.classList.contains('flex')) {
+                        btnWrapper.className = 'listen-btn-wrapper inline-flex';
+                        el.parentNode.appendChild(btnWrapper);
+                    } 
+                    else if (el.classList.contains('pinyin')) {
+                        btnWrapper.className = 'listen-btn-wrapper inline-block ml-1 align-middle';
+                        if (el.nextSibling) el.parentNode.insertBefore(btnWrapper, el.nextSibling);
+                        else el.parentNode.appendChild(btnWrapper);
+                    }
+                    else if (el.classList.contains('hanzi')) {
+                        btnWrapper.className = 'listen-btn-wrapper inline-block ml-1 align-middle';
+                        if (el.nextSibling) el.parentNode.insertBefore(btnWrapper, el.nextSibling);
+                        else el.parentNode.appendChild(btnWrapper);
+                    }
+                });
+            }
+            
+            // --- INITIALIZATION ---
+            loadProgress();
+            buildSearchIndex(); // Build the search index on load
+            showPage('home');
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
