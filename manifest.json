@@ -1,6 +1,6 @@
 {
   "name": "Mandarin Guide",
-  "short_name": "Mandarin",
+  "short_name": "Mandarin Guide",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#f8fafc",
@@ -21,3 +21,4 @@
     }
   ]
 }
+
