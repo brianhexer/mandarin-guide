@@ -7,7 +7,7 @@
 // 1. --- IMPORTANT: UPDATE THIS VERSION ---
 // To push an update to users, increment this version number.
 // e.g., 'mandarin-guide-v1', 'mandarin-guide-v2', etc.
-const CACHE_NAME = 'mandarin-guide-v10';
+const CACHE_NAME = 'mandarin-guide-v12';
 // ---
 
 // 2. --- Assets to Cache ---
@@ -102,6 +102,7 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
 
 
 
